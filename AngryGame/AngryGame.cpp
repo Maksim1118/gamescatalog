@@ -1,504 +1,646 @@
-﻿#include <SFML/Graphics.hpp>
-#include <random>
+﻿#include <random>
 #include <list>
 #include <vector>
 #include <iostream>
+#include <SFML/Graphics.hpp>
 using namespace sf;
 using namespace std;
 
 class Stand
 {
 public:
+
+    static vector<ConvexShape> _Stands;
+
     Stand()
     {
-      
-        
-        stand.setPointCount(11);
+        _Stands.resize(8);
 
-        stand.setPoint(0, Vector2f(0.f, 800.f));
-        stand.setPoint(1, Vector2f(300.f, 800.f));
-        stand.setPoint(2, Vector2f(550.f, 700.f));
-        stand.setPoint(3, Vector2f(650.f, 750.f));
-        stand.setPoint(4, Vector2f(800.f, 750.f));
-        stand.setPoint(5, Vector2f(950.f, 680.f));
-        stand.setPoint(6, Vector2f(1150.f, 680.f));
-        stand.setPoint(7, Vector2f(1350.f, 800.f));
-        stand.setPoint(8, Vector2f(1600.f, 800.f));
-        stand.setPoint(9, Vector2f(1600.f, 900.f));
-        stand.setPoint(10, Vector2f(0.f, 900.f));
+        _Stands[0].setPointCount(4);
+        _Stands[0].setPoint(0, Vector2f(0.f, 800.f));
+        _Stands[0].setPoint(1, Vector2f(300.f, 800.f));
+        _Stands[0].setPoint(2, Vector2f(300.f, 900.f));
+        _Stands[0].setPoint(3, Vector2f(0.f, 900.f));
 
-        stand.setFillColor(Color::Cyan);
+        _Stands[1].setPointCount(4);
+        _Stands[1].setPoint(0, Vector2f(300.f, 800.f));
+        _Stands[1].setPoint(1, Vector2f(550.f, 700.f));
+        _Stands[1].setPoint(2, Vector2f(550.f, 900.f));
+        _Stands[1].setPoint(3, Vector2f(300.f, 900.f));
+
+        _Stands[2].setPointCount(4);
+        _Stands[2].setPoint(0, Vector2f(550.f, 700.f));
+        _Stands[2].setPoint(1, Vector2f(650.f, 750.f));
+        _Stands[2].setPoint(2, Vector2f(650.f, 900.f));
+        _Stands[2].setPoint(3, Vector2f(550.f, 900.f));
+
+        _Stands[3].setPointCount(4);
+        _Stands[3].setPoint(0, Vector2f(650.f, 750.f));
+        _Stands[3].setPoint(1, Vector2f(800.f, 750.f));
+        _Stands[3].setPoint(2, Vector2f(800.f, 900.f));
+        _Stands[3].setPoint(3, Vector2f(650.f, 900.f));
+
+        _Stands[4].setPointCount(4);
+        _Stands[4].setPoint(0, Vector2f(800.f, 750.f));
+        _Stands[4].setPoint(1, Vector2f(950.f, 680.f));
+        _Stands[4].setPoint(2, Vector2f(950.f, 900.f));
+        _Stands[4].setPoint(3, Vector2f(800.f, 900.f));
+
+        _Stands[5].setPointCount(4);
+        _Stands[5].setPoint(0, Vector2f(950.f, 680.f));
+        _Stands[5].setPoint(1, Vector2f(1150.f, 680.f));
+        _Stands[5].setPoint(2, Vector2f(1150.f, 900.f));
+        _Stands[5].setPoint(3, Vector2f(950.f, 900.f));
+
+        _Stands[6].setPointCount(4);
+        _Stands[6].setPoint(0, Vector2f(1150.f, 680.f));
+        _Stands[6].setPoint(1, Vector2f(1350.f, 800.f));
+        _Stands[6].setPoint(2, Vector2f(1350.f, 900.f));
+        _Stands[6].setPoint(3, Vector2f(1150.f, 900.f));
+
+        _Stands[7].setPointCount(4);
+        _Stands[7].setPoint(0, Vector2f(1350.f, 800.f));
+        _Stands[7].setPoint(1, Vector2f(1600.f, 800.f));
+        _Stands[7].setPoint(2, Vector2f(1600.f, 900.f));
+        _Stands[7].setPoint(3, Vector2f(1350.f, 900.f));
+
+        for (int i = 0; i < _Stands.size(); i++)
+            _Stands[i].setFillColor(Color::Cyan);
     }
+
     void draw(RenderWindow& window)
     {
-
-        window.draw(stand);
+        for (int i = 0; i < _Stands.size(); i++)
+            window.draw(_Stands[i]);
     }
-    static ConvexShape stand;
-private:
-    
-    
+
 };
 
 class Gun
 {
 public:
+
+    static float _SaveAngle;
+
     Gun()
     {
-        StandGun.setSize(Vector2f(70.f, 70.f));
-        StandGun.setPosition(100.f, 800.f - StandGun.getGlobalBounds().height);
-        StandGun.setFillColor(Color(150, 150, 150));
+        _StandGun.setSize(Vector2f(72.f, 72.f));
+        _StandGun.setPosition(100.f, 800.f - _StandGun.getGlobalBounds().height);
+        _StandGun.setFillColor(Color(150, 150, 150));
 
         _Gun.setSize(Vector2f(16.f, 60.f));
-        GunPosX = 100.f  + StandGun.getGlobalBounds().width / 2.f;
-        GunPosY = 800.f - StandGun.getGlobalBounds().height / 2.f;
-        _Gun.setPosition(GunPosX, GunPosY);
+        _GunPosX = 100.f + _StandGun.getGlobalBounds().width / 2.f;
+        _GunPosY = 800.f - _StandGun.getGlobalBounds().height / 2.f;
+        _Gun.setPosition(_GunPosX, _GunPosY);
         _Gun.setFillColor(Color(170, 170, 255));
         _Gun.setOrigin(_Gun.getSize().x / 2.f, _Gun.getSize().y);
-        
+
     }
-    float  TrunkRotation(Vector2f musePos)
+    void  trunkRotation(Vector2f musePos)
     {
         Vector2f dir = musePos - _Gun.getPosition();
-        angle = atan2(dir.y, dir.x) * 180 / 3.14159265 + 90.f;
-        if (angle > 0 && angle < 90)
+        _Angle = atan2(dir.y, dir.x) * 180 / 3.14159265 + 90.f;
+        if (_Angle >= 0 && _Angle < 90)
         {
-            _Gun.setRotation(angle);
-            return angle;
+            _Gun.setRotation(_Angle);
+            _SaveAngle = _Gun.getRotation();
         }
-        
     }
+
     void draw(RenderWindow& window)
     {
-        window.draw(StandGun);
+        window.draw(_StandGun);
         window.draw(_Gun);
     }
-protected:
-    RectangleShape StandGun;
-    RectangleShape _Gun;
-    float GunPosX;
-    float GunPosY;
-    float angle;
 
+protected:
+    RectangleShape _StandGun;
+    RectangleShape _Gun;
+    float _GunPosX;
+    float _GunPosY;
+    float _Angle;
 };
+
 random_device random;
 mt19937 generate(random());
-
 class Shapes
 {
 public:
+
+    bool operator<(const Shapes& other) const
+    {
+        return getPos().x < other.getPos().x;
+    }
     virtual void draw(RenderWindow& window) = 0;
-    virtual void SetPosition(float x, float y) = 0;
-    virtual float GetHeight() const = 0;
-    virtual void SetOrigin(float x, float y) = 0;
-    virtual void SetRotation(float angle) = 0;
-    virtual Vector2f GetPos() const = 0;
+    virtual void setPosition(float x, float y) = 0;
+    virtual float getHeight() const = 0;
+    virtual void setOrigin(float x, float y) = 0;
+    virtual void setRotation(float _Angle) = 0;
+    virtual Vector2f getCenter() const = 0;
+    virtual Vector2f getPos() const = 0;
 };
-class Ball: public Shapes
+
+class Ball : public Shapes
 {
 public:
+
     Ball()
     {
-        shape.setRadius(20.f);
-        shape.setFillColor(Color(255, 225, 255));
-       // shape.setPosition(random() % 1250 + 300, random() % 120 + 640);
+        _Shape.setRadius(20.f);
+        _Shape.setFillColor(Color(255, 225, 255));
     }
-    void SetPosition(float x, float y)
+
+    void setPosition(float x, float y)
     {
-        shape.setPosition(x, y);
+        _Shape.setPosition(x, y);
     }
-    float  GetHeight() const
+
+    float  getHeight() const
     {
-        return shape.getGlobalBounds().height;
+        return _Shape.getGlobalBounds().height;
     }
-    void SetOrigin(float x, float y)
+
+    void setOrigin(float x, float y)
     {
-        shape.setOrigin(x, y);
+        _Shape.setOrigin(x, y);
     }
-    void SetRotation(float angle)
+
+    void setRotation(float _Angle)
     {
-        shape.setRotation(angle);
-       
+        _Shape.setRotation(_Angle);
+
     }
-    Vector2f GetPos() const
+
+    Vector2f getCenter() const
     {
-        return  shape.getPosition();
+        float rotateX = 20 * cos(_Shape.getRotation() * 3.14159 / 180) + 20 * sin(_Shape.getRotation() * 3.14159 / 180);
+        float rotateY = 20 * sin(_Shape.getRotation() * 3.14159 / 180) - 20 * cos(_Shape.getRotation() * 3.14159 / 180);
+        return _Shape.getPosition() + Vector2f(rotateX, rotateY);
     }
+
+    Vector2f getPos() const
+    {
+        return  _Shape.getPosition();
+    }
+
+    Vector2f getOrigin()
+    {
+
+        return _Shape.getOrigin();
+    }
+
     void draw(RenderWindow& window)override
     {
-        window.draw(shape);
+        window.draw(_Shape);
     }
+
 private:
-    CircleShape shape;
+    CircleShape _Shape;
 };
-class Cube: public Shapes
+
+class Cube : public Shapes
 {
 public:
+
     Cube()
     {
-        shape.setSize(Vector2f(40.f, 40.f));
-        // shape.setPosition(random() % 1250 + 300, random() % 120 + 640);
-        shape.setFillColor(Color::Yellow);
+        _Shape.setSize(Vector2f(40.f, 40.f));
+        _Shape.setFillColor(Color::Yellow);
     }
-    void SetPosition(float x, float y)
+
+    void setPosition(float x, float y)
     {
-        shape.setPosition(x, y);
+        _Shape.setPosition(x, y);
     }
-    float GetHeight() const
+
+    float getHeight() const
     {
-        return shape.getGlobalBounds().height;
+        return _Shape.getGlobalBounds().height;
     }
-    void SetOrigin(float x, float y)
+
+    void setOrigin(float x, float y)
     {
-        shape.setOrigin(x, y);
+        _Shape.setOrigin(x, y);
     }
-    void SetRotation(float angle)
+
+    void setRotation(float _Angle)
     {
-        shape.setRotation(angle);
+        _Shape.setRotation(_Angle);
     }
-    Vector2f GetPos() const
+
+    Vector2f getCenter() const
     {
-        return  shape.getPosition();
+        float rotateX = 20 * cos(_Shape.getRotation() * 3.14159 / 180) + 20 * sin(_Shape.getRotation() * 3.14159 / 180);
+        float rotateY = 20 * sin(_Shape.getRotation() * 3.14159 / 180) - 20 * cos(_Shape.getRotation() * 3.14159 / 180);
+        return _Shape.getPosition() + Vector2f(rotateX, rotateY);
     }
+
+    Vector2f getPos() const
+    {
+        return  _Shape.getPosition();
+    }
+
+    Vector2f getOrigin()
+    {
+
+        return _Shape.getOrigin();
+    }
+
     void draw(RenderWindow& window)
     {
-        window.draw(shape);
+        window.draw(_Shape);
     }
+
 private:
-    RectangleShape shape;
+    RectangleShape _Shape;
 };
-ConvexShape Stand::stand;
+
+vector<ConvexShape> Stand::_Stands;
 class Objects
 {
-   
+
 public:
-    
+
+    int _Choose;
+    vector<unique_ptr<Shapes>> _Objects;
+
     void CreateObjects()
     {
-        objects.clear();
+        _Objects.clear();
         for (int i = 0; i < 8; i++)
         {
-            Choose = random() % 2;
-            if (Choose == 0)
+            _Choose = random() % 2;
+            if (_Choose == 0)
             {
-                objects.push_back(make_unique<Ball>());
+                _Objects.push_back(make_unique<Ball>());
             }
             else
             {
-                objects.push_back(make_unique<Cube>());
+                _Objects.push_back(make_unique<Cube>());
             }
         }
-
     }
-    /*float PosToLine(const Vector2f& p, const Vector2f& l1, const Vector2f& l2)
-    {
-        /*float A = p.x - l1.x;
-        float B = p.y - l1.y;
-        float C = l2.x - l1.x;
-        float D = l2.y - l1.y;
 
-        float dot = A * C + B * D;
-        float len_sq = C * C + D * D;
-        float param = dot / len_sq;
-
-        float x_onLine, y_onLine;
-        if (param < 0)
-        {
-            x_onLine = l1.x;
-            y_onLine = l1.y;
-        }
-        else if (param > 1)
-        {
-            x_onLine = l2.x;
-            y_onLine = l2.y;
-        }
-        else
-        {
-            x_onLine = l1.x + param * C;
-            y_onLine = l1.y + param * D;
-        }
-        return sqrt((p.x - x_onLine) * (p.x - x_onLine) + (p.y - y_onLine) * (p.y - y_onLine));
-       // return fabs(A * p.x + B * p.y + C) / sqrt(A * A + B * B);
-        float A = l2.y - l1.y;
-        float B = l1.x - l2.x;
-        float C = l2.x * l1.y - l1.x * l2.y;
-        
-        //Pos.y = (-A * p.x - C) / B;
-        
-        return abs(A * p.x + B * p.y + C);
-   }*/
-    
-    /*void SpawnObjects()
+    void spawnObjects()
     {
-        for (auto& o: objects)
-        {
-            Vector2f newPos;
-            float newAngle;
-            int PosX;
-            bool intersec = true;
-            while (intersec)
-            {
-                PosX = random() % 1250 + 300;
-                //newPos = Vector2f(random() % 1250 + 300, random() % 800);
-                intersec = false;
-               
-                float minDist = numeric_limits<float>::max();
-
-                for (size_t i = 0; i < Stand::stand.getPointCount(); i++)
-                {
-                    float dist = DistancePointToLine(newPos, Stand::stand.getPoint(i), Stand::stand.getPoint((i + 1) % Stand::stand.getPointCount()));
-                    minDist = min(minDist, dist);
-                }
-                if (minDist != 40.f)
-                {
-                    intersec = true;
-                    continue;
-                }               
-                for (auto& other : objects)
-                {
-                    if (o != other)
-                    {
-                        const Vector2f Pos1 = newPos;
-                        const Vector2f Pos2 = other->GetPos();
-                        if (sqrt((Pos2.x - Pos1.x) * (Pos2.x - Pos1.x) + (Pos2.y - Pos1.y) * (Pos2.y - Pos1.y)) < 45.f)
-                        {
-                            intersec = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            float  dx = Stand::stand.getPoint(1).x - Stand::stand.getPoint(0).x;
-            float dy = Stand::stand.getPoint(1).y - Stand::stand.getPoint(0).y;
-            newAngle = atan2(dy, dx) * 180 / 3.14159;
-            o->SetPosition(newPos.x, newPos.y);
-            o->SetRotation(newAngle);
-           
-        }
-    }*/
-    void SpawnObjects()
-    {
-        for (auto& o : objects)
+        for (auto& o : _Objects)
         {
             bool cycle = true;
             float newAngle;
             while (cycle)
             {
-                Pos.x = random() % 1250 + 302;
+                _Pos.x = random() % 1250 + 302;
                 bool intersec = false;
-                //Pos.x = 900;
-                for (size_t i = 0;  cycle && i < Stand::stand.getPointCount(); i++)
+                for (size_t i = 0; i < Stand::_Stands.size(); i++)
                 {
-                   
-                    
-                    float x1 = Stand::stand.getPoint(i).x;
-                    float y1 = Stand::stand.getPoint(i).y;
-                    float x2 = Stand::stand.getPoint((i + 1) % Stand::stand.getPointCount()).x;
-                    float y2 = Stand::stand.getPoint((i + 1) % Stand::stand.getPointCount()).y;
-                    if ((int)Pos.x > (int)x1 + 5 && Pos.x < (int)x2 - 45)
+                    float x1 = Stand::_Stands[i].getPoint(0).x;
+                    float y1 = Stand::_Stands[i].getPoint(0).y;
+                    float x2 = Stand::_Stands[i].getPoint(1).x;
+                    float y2 = Stand::_Stands[i].getPoint(1).y;
+                    if ((int)_Pos.x > (int)x1 + 5 && _Pos.x < (int)x2 - 45)
                     {
                         if (x2 - x1 != 0)
                         {
-                            float y = y1 + ((y2 - y1) / (x2 - x1)) * (Pos.x - x1);
-                            Pos.y = (int)y;
-                            for (auto& other : objects)
+                            float y = y1 + ((y2 - y1) / (x2 - x1)) * (_Pos.x - x1);
+                            _Pos.y = (int)y;
+                            for (auto& other : _Objects)
                             {
-                                if (o != other) 
+                                if (o != other)
                                 {
-                                    const Vector2f Pos1 = Pos;
-                                    const Vector2f Pos2 = other->GetPos();
-                                    if (sqrt((Pos2.x - Pos1.x) * (Pos2.x - Pos1.x) + (Pos2.y - Pos1.y) * (Pos2.y - Pos1.y)) < 45.f)
+                                    const Vector2f pos1 = _Pos;
+                                    const Vector2f pos2 = other->getPos();
+                                    if (sqrt((pos2.x - pos1.x) * (pos2.x - pos1.x) + (pos2.y - pos1.y) * (pos2.y - pos1.y)) < 45.f)
                                     {
                                         intersec = true;
                                         break;
                                     }
-                                    
-                                }   
+                                }
                             }
                             if (!intersec)
                             {
                                 cycle = false;
-
-                                float  dx = (int)Stand::stand.getPoint((i + 1) % (int)Stand::stand.getPointCount()).x - (int)Stand::stand.getPoint(i).x;
-                                float dy = (int)Stand::stand.getPoint((i + 1) % (int)Stand::stand.getPointCount()).y - (int)Stand::stand.getPoint(i).y;
+                                float  dx = (int)Stand::_Stands[i].getPoint(1).x - (int)Stand::_Stands[i].getPoint(0).x;
+                                float dy = (int)Stand::_Stands[i].getPoint(1).y - (int)Stand::_Stands[i].getPoint(0).y;
                                 newAngle = atan2(dy, dx) * 180 / 3.14159;
-
-
-                                o->SetPosition(Pos.x, Pos.y);
-                                o->SetOrigin(0.f, 40.f);
-                                o->SetRotation(newAngle);
+                                o->setPosition(_Pos.x, _Pos.y);
+                                o->setOrigin(0.f, 40.f);
+                                o->setRotation(newAngle);
                                 break;
                             }
                         }
                     }
-                                          
                 }
-               
             }
-            
-
-           /* stand.setPoint(0, Vector2f(0.f, 800.f));
-        stand.setPoint(1, Vector2f(300.f, 800.f));
-        stand.setPoint(2, Vector2f(550.f, 700.f));
-        stand.setPoint(3, Vector2f(650.f, 750.f));
-        stand.setPoint(4, Vector2f(800.f, 750.f));
-        stand.setPoint(5, Vector2f(950.f, 680.f));
-        stand.setPoint(6, Vector2f(1150.f, 680.f));
-        stand.setPoint(7, Vector2f(1350.f, 800.f));
-        stand.setPoint(8, Vector2f(1600.f, 800.f));
-        stand.setPoint(9, Vector2f(1600.f, 900.f));
-        stand.setPoint(10, Vector2f(0.f, 900.f));*/
-
-            /*int dir = (int)Stand::stand.getPoint((i + 1) % Stand::stand.getPointCount()).y - (int)Stand::stand.getPoint(i).y;
-                       if (dir == 0.f)
-                       {
-                           Pos.y = (int)Stand::stand.getPoint(i).y;
-                       }
-                       else if (dir < 0.f)
-                       {
-                           dir = (int)Stand::stand.getPoint(i).y - (int)Stand::stand.getPoint((i + 1) % Stand::stand.getPointCount()).y;
-                           Pos.y = random() % dir + (int)Stand::stand.getPoint((i + 1) % Stand::stand.getPointCount()).y;
-                       }
-                       else
-                       {
-                           Pos.y = random() % dir + (int)Stand::stand.getPoint(i).y;
-                       }
-                       int distance = PosToLine(Pos, Stand::stand.getPoint(i), Stand::stand.getPoint((i + 1) % Stand::stand.getPointCount()));
-                       if (distance == 0)
-                       {
-                           cycle = false;
-                           o->SetPosition(Pos.x, Pos.y - 40.f);
-                           break;
-                       }*/
+        }
+        /*for (auto it = objects.begin(); it != objects.end(); ++it)
+        {
+            bool swapped = false;
+            for (auto innerIt = objects.begin(); innerIt != it; ++innerIt)
+            {
+                if (*innerIt > *it)
+                {
+                    iter_swap(it, innerIt);
+                    swapped = true;
+                }
+            }
+            if (!swapped)
+            {
+                break;
+            }
+        }*/
+        for (auto it = _Objects.begin(); it != _Objects.end(); ++it)
+        {
+            for (auto innerIt = next(it); innerIt != _Objects.end(); ++innerIt)
+            {
+                if (*innerIt < *it)
+                {
+                    iter_swap(it, innerIt);
+                }
+            }
         }
     }
-    
+
     void drawObjects(RenderWindow& window)
     {
-        for (auto& o : objects)
+        for (auto& o : _Objects)
         {
             o->draw(window);
         }
     }
+
 private:
-    int Choose;
-    list<unique_ptr<Shapes>> objects;
-    Vector2f Pos;
+    Vector2f _Pos;
 };
-class Patrons : public Gun
+
+float getLen(Vector2f vec)
+{
+    return sqrt(vec.x * vec.x + vec.y * vec.y);
+}
+
+const Vector2f SquareSize(10.f, 20.f);
+class Patron
 {
 public:
+    CircleShape _Shape;
+    Vector2f _V;
+    RectangleShape _Square;
 
-    int index = 0;
-    vector<Patrons> patrons;
-    Patrons()
+    Patron()
     {
-      
-        shape.setRadius(5);
-        shape.setFillColor(Color::Green);
-        
+        _Shape.setRadius(5.f);
+        _Shape.setFillColor(Color::Green);
+
+        _Square.setSize(SquareSize);
     }
-    void CreatePatrons()
+
+    Vector2f getCenter() const
     {
-        patrons.clear();
-        for (int i = 0; i < 10; i++)
-        {
-            patrons.emplace_back();
-        }
+        return _Shape.getPosition() + Vector2f(5.f, 5.f);
     }
-    void Spawn(float angle)
+
+    void move(int TimeDiff)
     {
-        float angleRad = angle * (3.14159 / 180);
-        float GunX = _Gun.getPosition().x  + _Gun.getSize().y * sin(angleRad);
-        float GunY = _Gun.getPosition().y - _Gun.getSize().y * cos(angleRad);
-       
-        patrons[index].shape.setPosition(GunX - 5, GunY - 5);
+        _A = Vector2f(0.f, 0.001f);
+        _V.x = _V.x;
+        _V.y += _A.y * TimeDiff;
+        _Shape.move(_V * (float)TimeDiff);
     }
-  
-    void Move()
-    {
-        patrons[index].shape.move(0.0005f, 0.0005f);
-    }
+
     void draw(RenderWindow& window)
     {
-        for (int i = 0; i <= index; i++)
+        window.draw(_Shape);
+        window.draw(_Square);
+    }
+
+private:
+    Vector2f _A;
+    float _Gravity;
+    bool  _IsAddKspeed = false;
+};
+
+float Gun::_SaveAngle;
+
+Font font;
+class ListPatrons : public Gun
+{
+public:
+    int _Index = 0;
+    int _TempIndex = 0;
+    vector<Patron> _Patrons;
+    list<Patron> _ShowPatrons;
+    Text _CountPatrons;
+    int _CountP = 10;
+    ListPatrons()
+    {
+        string FileName = "D:\\изучение c++\\StrikeGame\\x64\\Debug\\font\\ofont.ru_Europe.ttf";
+        if (!font.loadFromFile(FileName))
         {
-            window.draw(patrons[i].shape);
+            cout << "error" << endl;
         }
-       
+    }
+
+    void createPatrons()
+    {
+        _Patrons.clear();
+        for (int i = 0; i < 10; i++)
+        {
+            _Patrons.emplace_back();
+        }
+    }
+    void intersectObj(Objects& o)
+    {
+        vector<Patron>::iterator it;
+        for (it = _Patrons.begin(); it < _Patrons.begin() + _Index;)
+        {
+            bool intersecObj = false;
+            bool intersecStand = false;
+            bool intersecScreen = false;
+            for (auto objIt = o._Objects.begin(); objIt != o._Objects.end(); ++objIt)
+            {
+                float dx = abs(it->getCenter().x - (*objIt)->getCenter().x);
+                float dy = abs(it->getCenter().y - (*objIt)->getCenter().y);
+                if (dx <= 40.f / 2 + 5.f && dy <= 40.f / 2 + 5.f)
+                {
+                    intersecObj = true;
+                    objIt = o._Objects.erase(objIt);
+                    break;
+                }
+            }
+            for (size_t i = 0; i < Stand::_Stands.size(); i++)
+            {
+                float dx = Stand::_Stands[i].getPoint(1).x - Stand::_Stands[i].getPoint(0).x;
+                float dy = Stand::_Stands[i].getPoint(1).y - Stand::_Stands[i].getPoint(0).y;
+                float dist = sqrt(dx * dx + dy * dy);
+
+                float x0 = it->getCenter().x;
+                float y0 = it->getCenter().y;
+
+                float t = ((x0 - Stand::_Stands[i].getPoint(0).x) * dx + (y0 - Stand::_Stands[i].getPoint(0).y) * dy) / (dist * dist);
+                float projectionX = Stand::_Stands[i].getPoint(0).x + t * dx;
+                float projectionY = Stand::_Stands[i].getPoint(0).y + t * dy;
+                if (t >= 0 && t <= 1 && sqrt((projectionX - x0) * (projectionX - x0) + (projectionY - y0) * (projectionY - y0)) <= 5.f)
+                {
+                    intersecStand = true;
+                    break;
+                }
+            }
+            if (it->_Shape.getPosition().x >= 1590.f || it->_Shape.getPosition().y <= 0.f)
+            {
+                intersecScreen = true;
+            }
+            if (intersecObj || intersecStand || intersecScreen)
+            {
+                it = _Patrons.erase(it);
+                _Index--;
+                _TempIndex--;
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+
+    void countPatrons()
+    {
+        Vector2f pos;
+        float centerStandGunX = _StandGun.getPosition().x + (_StandGun.getSize().x - SquareSize.x) / 2;
+        pos.x = centerStandGunX - 77;
+        pos.y = 840.f;
+        _ShowPatrons.clear();
+        for (int i = 0; i < 10; i++)
+        {
+            _ShowPatrons.emplace_back();
+            _ShowPatrons.back()._Square.setPosition(pos.x, pos.y);
+            pos.x += SquareSize.x + 6.f;
+        }
+    }
+
+    void outText()
+    {
+        Vector2f pos;
+        float centerStandGunX = _StandGun.getPosition().x + (_StandGun.getSize().x - SquareSize.x) / 2;
+        pos.x = centerStandGunX - _CountPatrons.getGlobalBounds().width / 2;
+        pos.y = 810;
+        _CountPatrons.setFont(font);
+        _CountPatrons.setCharacterSize(20);
+        _CountPatrons.setFillColor(Color::Black);
+        _CountPatrons.setString(L"Number of patrons: " + to_string(_CountP));
+        _CountPatrons.setPosition(pos.x, pos.y);
+    }
+
+    void spawn(float _Angle)
+    {
+        if (_Index >= _Patrons.size())
+        {
+            return;
+        }
+        float angleRad = _Angle * (3.14159 / 180);
+        float GunX = _Gun.getPosition().x + _Gun.getSize().y * sin(angleRad);
+        float GunY = _Gun.getPosition().y - _Gun.getSize().y * cos(angleRad);
+        _Patrons[_Index]._Shape.setPosition(GunX - 5, GunY - 5);
+    }
+    void move(int TimeDiff)
+    {
+        int max = _TempIndex;
+        if (max >= _Patrons.size())
+        {
+            max--;
+        }
+        for (int i = 0; i <= max; i++)
+        {
+            _Patrons[i].move(TimeDiff);
+        }
+    }
+
+    void draw(RenderWindow& window)
+    {
+        int max = _Index;
+        if (max >= _Patrons.size())
+        {
+            max--;
+        }
+        for (int i = 0; i <= max; i++)
+        {
+            window.draw(_Patrons[i]._Shape);
+        }
+        for (auto& showPat : _ShowPatrons)
+        {
+            window.draw(showPat._Square);
+        }
+        window.draw(_CountPatrons);
     }
 private:
-    CircleShape shape;
-    
+
 };
 int main()
 {
-
     ContextSettings settings;
-    settings.antialiasingLevel =  8;
-
+    settings.antialiasingLevel = 8;
     RenderWindow window(VideoMode(1600, 900), "AngryGame", Style::Default, settings);
 
-   
     Stand _stand;
-    Gun gun;
+    Gun _gun;
     Objects _objects;
-    Patrons _patrons;
-    _objects.CreateObjects();
-    _objects.SpawnObjects();
-    _patrons.CreatePatrons();
-    bool ButtonPressed = false;
-    float SaveAngle;
+    ListPatrons _patrons;
+
+    Clock clock;
+    Time time = clock.getElapsedTime();
     while (window.isOpen())
     {
-        
         Event event;
         while (window.pollEvent(event))
         {
-         
             if (event.type == Event::MouseMoved)
             {
-                SaveAngle = gun.TrunkRotation(Vector2f(event.mouseMove.x, event.mouseMove.y));
-                if (SaveAngle >= 0 && SaveAngle <= 90)
-                {
-                    if (_patrons.index < _patrons.patrons.size())
-                    {
-                        _patrons.Spawn(SaveAngle);
-
-                       
-                        
-                    }
-
-                }
-                
+                _gun.trunkRotation(Vector2f(event.mouseMove.x, event.mouseMove.y));
             }
-            if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Right)
+            /*if (Mouse::isButtonPressed(Mouse::Left))
             {
-                ButtonPressed = true;
-                //_patrons.index++;
-               
+               //Patrons::Kspeed += 0.1f;
+
+            }*/
+            if (event.type == Event::MouseButtonReleased && event.mouseButton.button == Mouse::Left)
+            {
+                if (_patrons._Index < _patrons._Patrons.size())
+                {
+                    _patrons._Patrons[_patrons._Index]._V.x = 1.24f * cos((Gun::_SaveAngle - 90) * (3.14159 / 180));
+                    _patrons._Patrons[_patrons._Index]._V.y = 1.24f * sin((Gun::_SaveAngle - 90) * (3.14159 / 180));
+
+                    _patrons._TempIndex = _patrons._Index;
+                    _patrons._Index++;
+                    _patrons._ShowPatrons.pop_back();
+                    if (_patrons._CountP != 0)
+                        _patrons._CountP--;
+                }
             }
             if (event.type == Event::Closed)
                 window.close();
-            
         }
-        if(ButtonPressed)
-            _patrons.Move();
-        //_patrons.SpawnAndMove();
-       //_patrons.Move();
-        //_patrons.PatronRotate();
+        Time time2 = clock.getElapsedTime();
+        int diff = time2.asMilliseconds() - time.asMilliseconds();
+        time = time2;
+        if (_patrons._Patrons.empty() || _objects._Objects.empty())
+        {
+            _patrons.createPatrons();
+            _patrons.countPatrons();
+            _patrons._CountP = 10;
+            _objects._Objects.clear();
+            _objects.CreateObjects();
+            _objects.spawnObjects();
+        }
+        _patrons.outText();
+        _patrons.spawn(Gun::_SaveAngle);
+        _patrons.intersectObj(_objects);
+        if (_patrons._Index > _patrons._TempIndex)
+            _patrons.move(diff);
+
         window.clear();
-        
-        
         _stand.draw(window);
         _objects.drawObjects(window);
-       //if (ButtonPressed)
         _patrons.draw(window);
-        gun.draw(window);
+        _gun.draw(window);
         window.display();
-       
-        
     }
-
     return 0;
 }

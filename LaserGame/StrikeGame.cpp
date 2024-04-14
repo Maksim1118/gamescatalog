@@ -1,4 +1,3 @@
-#include <SFML/Graphics.hpp>
 #include <cmath>
 #include <iostream>
 #include <random>
@@ -6,323 +5,288 @@
 #include <list>
 #include <fstream>
 #include <string>
+#include <SFML/Graphics.hpp>
 #define _CRT_SECURE_NO_WARNINGS
-
-
 using namespace std;
 using namespace sf;
 
 class GunStand
 {
 public:
-   const float _Width = 800.f;
-   const float _Height = 100.f;
+
+    const float _Width = 800.f;
+    const float _Height = 100.f;
     GunStand()
     {
         _Stand.setFillColor(Color(0, 250, 250));
-        _Stand.setSize(Vector2f(_Width,_Height));
+        _Stand.setSize(Vector2f(_Width, _Height));
         _Stand.setPosition(0.f, 700.f);
     }
+
     void draw(RenderWindow& window)
     {
         window.draw(_Stand);
     }
+
 private:
     RectangleShape _Stand;
-
 };
+
 class Gun
 {
 public:
-   
+
     GunStand _Stand;
-    float _Width, _TWidth;
-    float _Height, _THeight;
-    float _GPos_X, _GPos_Y;
-    float _TPos_X, _TPos_Y;
-    float LaserPosEndX, LaserPosEndY;
-    float len;
-    float angle;
+    float _Width, _Height;
+    float _TrunkWidth, _TrunkHeight;
+    float _GunPosX, _GunPosY;
+    float _TrunkPosX, _TrunkPosY;
+    float _LaserPosEndX, _LaserPosEndY;
+    float _Len;
+    float _Angle;
     RectangleShape _Gun;
     RectangleShape _Trunk;
-    bool _isLaserActive = false;
-    int _laserDuration;
+    bool _IsLaserActive = false;
+    int _LaserDuration;
     RectangleShape _Laser;
-    float A;
-    float B;
-    float C;
-    static bool intersec;
+    // формула прямой Ax + By +  C = 0
+    float _A;
+    float _B;
+    float _C;
+    static bool _Intersec;
+
     Gun()
     {
         _Width = 80.f;
         _Height = 80.f;
-        _TWidth = 4.f;
-        _THeight = 70.f;
-        _GPos_X = (_Stand._Width - _Width) / 2;
-        _GPos_Y = 700.f -_Height;
+        _TrunkWidth = 4.f;
+        _TrunkHeight = 70.f;
+        _GunPosX = (_Width - _Width) / 2;
+        _GunPosY = 700.f - _Height;
         _Gun.setFillColor(Color(0, 200, 250));
         _Gun.setSize(Vector2f(_Width, _Height));
-        _Gun.setPosition(_GPos_X, _GPos_Y);
-        
-        _TPos_X = _GPos_X - _TWidth / 2 + _Width * 0.5f;
-        _TPos_Y = _GPos_Y + _Height/2;
+        _Gun.setPosition(_GunPosX, _GunPosY);
+
+        _TrunkPosX = _GunPosX - _TrunkWidth / 2 + _Width * 0.5f;
+        _TrunkPosY = _GunPosY + _Height / 2;
         _Trunk.setFillColor(Color(100, 100, 250));
-        _Trunk.setSize(Vector2f(_TWidth, _THeight));
+        _Trunk.setSize(Vector2f(_TrunkWidth, _TrunkHeight));
         _Trunk.setOutlineThickness(1.f);
         _Trunk.setOutlineColor(sf::Color(255, 0, 255));
-        _Trunk.setOrigin(_TWidth / 2, _THeight);
-        _Trunk.setPosition(_TPos_X, _TPos_Y);
-        
-
+        _Trunk.setOrigin(_TrunkWidth / 2, _TrunkHeight);
+        _Trunk.setPosition(_TrunkPosX, _TrunkPosY);
     }
 
     void updateTrunkRotation(Vector2f mousePosition)
     {
-        Vector2f direction = mousePosition - _Trunk.getPosition();
-        angle = atan2(direction.y, direction.x) * 180 / 3.14159265  + 90;
-        if (angle > -90 && angle < 90)
+        Vector2f _Direction = mousePosition - _Trunk.getPosition();
+        _Angle = atan2(_Direction.y, _Direction.x) * 180 / 3.14159265 + 90;
+        if (_Angle > -90 && _Angle < 90)
         {
-            _Trunk.setRotation(angle);
+            _Trunk.setRotation(_Angle);
         }
-
-       
     }
-    void CreateLaser()
+
+    void createLaser()
     {
         _Laser.setSize(Vector2f(2.f, 800.f));
         _Laser.setFillColor(Color::Red);
-        _Laser.setOrigin(2 / 2, 800 + _THeight);
+        _Laser.setOrigin(2 / 2, 800 + _TrunkHeight);
         _Laser.setPosition(_Trunk.getPosition().x, _Trunk.getPosition().y);
         _Laser.setRotation(_Trunk.getRotation());
-       // cout << _Laser.getPosition().x ;
-       // cout << "  " << _Laser.getPosition().y << endl;
     }
-   
-  
-    void SetIsActiveLaser(bool value)
+
+    void setIsActiveLaser(bool value)
     {
-        _isLaserActive = value;
+        _IsLaserActive = value;
     }
+
     void updateLaser(int diff)
     {
-        if (_isLaserActive  == true)
+        if (_IsLaserActive == true)
         {
-            
-           
-            _laserDuration -= diff;
-            if (_laserDuration < 0)
+            _LaserDuration -= diff;
+            if (_LaserDuration < 0)
             {
-                _isLaserActive = false;
+                _IsLaserActive = false;
             }
-           
         }
-        
     }
-    int Duration()
+
+    int duration()
     {
-      return _laserDuration = 50;
-        
+        return _LaserDuration = 50;
+
     }
-   
 
     void draw(RenderWindow& window)
     {
         window.draw(_Gun);
-        if (_isLaserActive == true)
+        if (_IsLaserActive == true)
         {
             window.draw(_Laser);
         }
         window.draw(_Trunk);
-        
     }
-  
-   
-}; 
+};
 
 random_device rd;
 mt19937 gen(rd());
-const float _SWidth = 30.f;
-const float _SHeight = 30.f;
-const float _CRadius = 15.f;
+bool Gun::_Intersec = false;
+
+const float squareWidth = 30.f;
+const float squareHeight = 30.f;
+const float circleRadius = 15.f;
 enum Direction
 {
-    DIR_LEFT, 
+    DIR_LEFT,
     DIR_RIGHT
 };
-bool Gun::intersec = false;
-
-class Object 
+class Object
 {
 public:
-    RectangleShape square;
-    CircleShape circle;
-    //Gun gun;
-    //float speed;
-    //bool isActive = false;
-    Direction direction;
-    int type;
-    Vector2f center;
-    int PosX, PosY;
-    static int cout;
 
-    
+    RectangleShape _Square;
+    CircleShape _Circle;
+    Direction _Direction;
+    int _TypeObj;
+    Vector2f _Center;
+    int _PosX, _PosY;
+    static int _Count;
 
-    Object() 
+    Object()
     {
-       
-       // speed = 1.0f;
-        //isActive = true;
-        type = rd() % 2;
-        
-        if (type == 0)
+        _TypeObj = rd() % 2;
+        if (_TypeObj == 0)
         {
-            square.setFillColor(Color::Yellow);
-            square.setSize(Vector2f(_SWidth, _SHeight));
-           
-           // square.setPosition(PosX, PosY);
+            _Square.setFillColor(Color::Yellow);
+            _Square.setSize(Vector2f(squareWidth, squareHeight));
         }
         else
         {
-            circle.setFillColor(Color::Blue);
-            circle.setRadius(_CRadius);
-            //circle.setPosition(PosX = rd() % 800, PosY = rd() % 480 + 20);
+            _Circle.setFillColor(Color::Blue);
+            _Circle.setRadius(circleRadius);
         }
-        
+    }
 
-    }
-   
-    void SetPosition(int x, int y)
+    void setPosition(int x, int y)
     {
-        if (type == 0)
+        if (_TypeObj == 0)
         {
-            square.setPosition(x, y);
+            _Square.setPosition(x, y);
         }
         else
         {
-            circle.setPosition(x, y);
+            _Circle.setPosition(x, y);
         }
     }
-    Vector2f GetPosition()
+
+    Vector2f getPosition() const
     {
-        if (type == 0)
+        if (_TypeObj == 0)
         {
-           return square.getPosition();
+            return _Square.getPosition();
         }
         else
         {
-           return circle.getPosition();
+            return _Circle.getPosition();
         }
     }
+
     void move(float x, float y)
     {
-        if (type == 0)
+        if (_TypeObj == 0)
         {
-            square.move(x, y);
+            _Square.move(x, y);
         }
         else
         {
-            circle.move(x, y);
+            _Circle.move(x, y);
         }
     }
-
-  
 };
+
 class List : Object
 {
 public:
-    Vector2f GetCenterCircle(list<Object>::iterator it)
+
+    Vector2f getCenterCircle(list<Object>::iterator it)
     {
-
-        float centerX = it->GetPosition().x + _CRadius;
-        float centerY = it->GetPosition().y + _CRadius;
-        return center = Vector2f(centerX, centerY);
-
+        float centerX = it->getPosition().x + circleRadius;
+        float centerY = it->getPosition().y + circleRadius;
+        return _Center = Vector2f(centerX, centerY);
     }
-    void CreateObjects()
+    void createObjects()
     {
-        objects.clear();
+        _Objects.clear();
         for (int i = 0; i < 8; i++)
         {
-            objects.emplace_back();
+            _Objects.emplace_back();
         }
     }
-    void SpawnObject()
+
+    void spawnObject()
     {
         vector<pair<int, int>> occupiedPositionRanges;
-
-        for (auto& o : objects)
+        for (auto& o : _Objects)
         {
-
-            PosY = rd() % 480 + 20;
-
+            _PosY = rd() % 480 + 20;
             while (true)
             {
                 bool positionOccupied = false;
                 for (const auto& range : occupiedPositionRanges)
                 {
-                    if (PosY >= range.first && PosY <= range.second)
+                    if (_PosY >= range.first && _PosY <= range.second)
                     {
-
                         positionOccupied = true;
                         break;
                     }
                 }
-
                 if (!positionOccupied)
                 {
                     break;
                 }
-
-
-                PosY = rd() % 480 + 20;
+                _PosY = rd() % 480 + 20;
             }
-            o.direction = (Direction)(rd() % 2);
-            if (o.direction == DIR_RIGHT)
+            o._Direction = (Direction)(rd() % 2);
+            if (o._Direction == DIR_RIGHT)
             {
-                PosX = 0;
+                _PosX = 0;
             }
             else
             {
-                PosX = 770;
+                _PosX = 770;
             }
-            o.SetPosition(PosX, PosY);
-
-            occupiedPositionRanges.push_back({ PosY - 35.f, PosY + 35.f });
+            o.setPosition(_PosX, _PosY);
+            occupiedPositionRanges.push_back({ _PosY - 35.f, _PosY + 35.f });
         }
     }
-  
-    void Intersection(Gun& gun)
+
+    void intersection(Gun& gun)
     {
-        for (auto it = objects.begin(); it != objects.end();)
+        for (auto it = _Objects.begin(); it != _Objects.end();)
         {
-            gun.LaserPosEndX = gun._Laser.getPosition().x + 800.f * cos((gun.angle + 90) * 3.14159265 / 180);
+            gun._LaserPosEndX = gun._Laser.getPosition().x + 800.f * cos((gun._Angle + 90) * 3.14159265 / 180);
+            gun._LaserPosEndY = gun._Laser.getPosition().y + 800.f * sin((gun._Angle + 90) * 3.14159265 / 180);
 
-            gun.LaserPosEndY = gun._Laser.getPosition().y + 800.f * sin((gun.angle + 90) * 3.14159265 / 180);
-
-            gun.A = gun.LaserPosEndY - gun._Laser.getPosition().y;
-
-            gun.B = gun._Laser.getPosition().x - gun.LaserPosEndX;
-
-            gun.C = gun.LaserPosEndX * gun._Laser.getPosition().y - gun._Laser.getPosition().x * gun.LaserPosEndY;
-
-            if (it->type == 1)
+            gun._A = gun._LaserPosEndY - gun._Laser.getPosition().y;
+            gun._B = gun._Laser.getPosition().x - gun._LaserPosEndX;
+            gun._C = gun._LaserPosEndX * gun._Laser.getPosition().y - gun._Laser.getPosition().x * gun._LaserPosEndY;
+            if (it->_TypeObj == 1)
             {
-                float distance = abs(gun.A * GetCenterCircle(it).x + gun.B * GetCenterCircle(it).y + gun.C) / sqrt(gun.A * gun.A + gun.B * gun.B);
-                if (distance <= _CRadius)
+                float distance = abs(gun._A * getCenterCircle(it).x + gun._B * getCenterCircle(it).y + gun._C) / sqrt(gun._A * gun._A + gun._B * gun._B);
+                if (distance <= circleRadius)
                 {
-
-                    Gun::intersec = true;
-                    cout++;
-                   
+                    Gun::_Intersec = true;
+                    _Count++;
                 }
                 else
                 {
-                    Gun::intersec = false;
-                   
+                    Gun::_Intersec = false;
                 }
-                if (Gun::intersec)
+                if (Gun::_Intersec)
                 {
-                    it = objects.erase(it);
+                    it = _Objects.erase(it);
                 }
                 else
                 {
@@ -331,45 +295,41 @@ public:
             }
             else
             {
-                
-                
-
-                if ((gun.A * it->GetPosition().x + gun.B * it->GetPosition().y + gun.C) * (gun.A * (it->GetPosition().x + _SWidth) + gun.B * it->GetPosition().y + gun.C) <= 0 ||
-                    (gun.A * (it->GetPosition().x + _SWidth) + gun.B * it->GetPosition().y  + gun.C) * (gun.A * (it->GetPosition().x + _SWidth) + gun.B * (it->GetPosition().y + _SHeight) + gun.C) <= 0 ||
-                    (gun.A * (it->GetPosition().x + _SWidth) + gun.B * (it->GetPosition().y + _SHeight) + gun.C) * (gun.A * it->GetPosition().x + gun.B * (it->GetPosition().y + _SHeight) + gun.C) <= 0 ||
-                    (gun.A * it->GetPosition().x + gun.B * (it->GetPosition().y + _SHeight) + gun.C) * (gun.A * it->GetPosition().x + gun.B * it->GetPosition().y + gun.C) <= 0)
+                if ((gun._A * it->getPosition().x + gun._B * it->getPosition().y + gun._C) * (gun._A * (it->getPosition().x + squareWidth) + gun._B * it->getPosition().y + gun._C) <= 0 ||
+                    (gun._A * (it->getPosition().x + squareWidth) + gun._B * it->getPosition().y + gun._C) * (gun._A * (it->getPosition().x + squareWidth) + gun._B * (it->getPosition().y + squareHeight) + gun._C) <= 0 ||
+                    (gun._A * (it->getPosition().x + squareWidth) + gun._B * (it->getPosition().y + squareHeight) + gun._C) * (gun._A * it->getPosition().x + gun._B * (it->getPosition().y + squareHeight) + gun._C) <= 0 ||
+                    (gun._A * it->getPosition().x + gun._B * (it->getPosition().y + squareHeight) + gun._C) * (gun._A * it->getPosition().x + gun._B * it->getPosition().y + gun._C) <= 0)
                 {
-                    Gun::intersec = true;
-                    cout++;
+                    Gun::_Intersec = true;
+                    _Count++;
                 }
                 else
                 {
-                    Gun::intersec = false;
+                    Gun::_Intersec = false;
                 }
-                if (Gun::intersec)
+                if (Gun::_Intersec)
                 {
-                    it = objects.erase(it);
-                   
+                    it = _Objects.erase(it);
                 }
                 else
                 {
                     it++;
                 }
-                
             }
         }
     }
-    void MoveObjects()
+
+    void moveObjects()
     {
-        for (auto it = objects.begin(); it != objects.end();)
+        for (auto it = _Objects.begin(); it != _Objects.end();)
         {
-            if (it->GetPosition().x < 0 || it->GetPosition().x > 770)
+            if (it->getPosition().x < 0 || it->getPosition().x > 770)
             {
-                it = objects.erase(it);
+                it = _Objects.erase(it);
             }
             else
             {
-                if (it->direction == DIR_RIGHT)
+                if (it->_Direction == DIR_RIGHT)
                 {
                     it->move(0.02f, 0.f);
                 }
@@ -381,155 +341,143 @@ public:
             }
         }
     }
+
     bool isListEmpty()
     {
-        if (objects.empty())
-               return true;
+        if (_Objects.empty())
+            return true;
     }
+
     void drawObjects(RenderWindow& window)
     {
-        for (auto& o : objects) {
-
-            if (o.type == 0) {
-                window.draw(o.square);
+        for (auto& o : _Objects)
+        {
+            if (o._TypeObj == 0)
+            {
+                window.draw(o._Square);
             }
-            else if (o.type == 1) {
-                window.draw(o.circle);
+            else if (o._TypeObj == 1)
+            {
+                window.draw(o._Circle);
             }
-
         }
     }
-   
-   
+
 private:
-    list<Object> objects;
-   
+    list<Object> _Objects;
 };
-int Object::cout = 0;
+
+int Object::_Count = 0;
 Font font;
+
 class Score
 {
 public:
-    
+
     Score()
     {
-        std::string FileName = "D:\\изучение c++\\StrikeGame\\x64\\Debug\\font\\ofont.ru_Europe.ttf";
+        string FileName = "D:\\изучение c++\\StrikeGame\\x64\\Debug\\font\\ofont.ru_Europe.ttf";
         if (!font.loadFromFile(FileName))
-        { 
+        {
             cout << "error" << endl;
         }
-      
-       ScoreText.setFont(font);
-       ScoreText.setString(L"Score: 0");
-       ScoreText.setCharacterSize(18);
-       ScoreText.setFillColor(Color::Green);
-       ScoreText.setPosition(600.f - ScoreText.getGlobalBounds().width, 5.f);
+        _ScoreText.setFont(font);
+        _ScoreText.setString(L"Score: 0");
+        _ScoreText.setCharacterSize(18);
+        _ScoreText.setFillColor(Color::Green);
+        _ScoreText.setPosition(600.f - _ScoreText.getGlobalBounds().width, 5.f);
 
-       OpenRecord();
-       Record.setFont(font);
-       Record.setString(L"Record Score: " + ScoreRecord);
-       Record.setCharacterSize(18);
-       Record.setPosition(200.f, 5.f);
-       
-    }
-   
-    void ScoreChage()
-    {
-        if (Object::cout > 0)
-        {
-            score += Object::cout;
-            ScoreText.setString(L"Score: " + to_string(score));
-            ScoreText.setFillColor(Color::Green);
-            Object::cout = 0;           
-            //Gun::intersec = false;
-        }
-        else 
-        {
-            
-            score -= 3;
-            if (score < 0)
-                score = 0;
-            ScoreText.setString(L"Score: " + to_string(score));
-            ScoreText.setFillColor(Color::Red);
-            
-              
-        }
-        
-       // cout << Gun::intersec << endl;
+        openRecord();
+        _Record.setFont(font);
+        _Record.setString(L"Record Score: " + to_string(_RecordNum));
+        _Record.setCharacterSize(18);
+        _Record.setPosition(200.f, 5.f);
 
     }
-    void UpdateColor(int diff)
+
+    void scoreChage()
     {
-        if (Object::cout == 0)
+        if (Object::_Count > 0)
         {
-          
-            Timer -= diff;
-            if (Timer < 0)
+            _Score += Object::_Count;
+            _ScoreText.setString(L"Score: " + to_string(_Score));
+            _ScoreText.setFillColor(Color::Green);
+            Object::_Count = 0;
+        }
+        else
+        {
+            _Score -= 3;
+            if (_Score < 0)
+                _Score = 0;
+            _ScoreText.setString(L"Score: " + to_string(_Score));
+            _ScoreText.setFillColor(Color::Red);
+        }
+    }
+
+    void updateColor(int diff)
+    {
+        if (Object::_Count == 0)
+        {
+            _Timer -= diff;
+            if (_Timer < 0)
             {
-                ScoreText.setFillColor(Color::Green);
-                Timer = 1500;
+                _ScoreText.setFillColor(Color::Green);
+                _Timer = 1500;
             }
-            
-            
-            
-           
         }
     }
-    void SaveRecord()
+
+    void saveRecord()
     {
-        record = stoi(ScoreRecord);
         ofstream file;
         file.open("record.txt");
-        if (record < score)
-            record = score;       
-        file << record;
+        if (_RecordNum < _Score)
+            _RecordNum = _Score;
+        file << _RecordNum;
         file.close();
     }
-    void OpenRecord()
+
+    void openRecord()
     {
-        ifstream file;
-        file.open("record.txt");
-        while (getline(file, ScoreRecord)) { }
+        ifstream file("record.txt");
+        if (!file.is_open())
+        {
+            _RecordNum = 0;
+        }
+        file >> _RecordNum;
         file.close();
-        
-       
     }
+
     void drawScore(RenderWindow& window)
     {
-       window.draw(ScoreText);
-       window.draw(Record);
+        window.draw(_ScoreText);
+        window.draw(_Record);
     }
+
 private:
-    int score = 0;
-    Text ScoreText;
-    int Timer = 1500;
-    Text Record;
-    string ScoreRecord;
-    int record = 0;
- 
-   
+
+    int _Score = 0;
+    Text _ScoreText;
+    int _Timer = 1500;
+    Text _Record;
+    string _ScoreRecord;
+    int _RecordNum = 0;
 };
+
 int main()
-{   
+{
     setlocale(LC_ALL, "ru");
     RenderWindow window(VideoMode(800, 800), "Skeet Shooting");
-   
+
     Gun _Gun;
     GunStand _GunStand;
     List _List;
     Score _Score;
-   
-
 
     Clock clock;
     Time time = clock.getElapsedTime();
-   
-   
-   
-  
     while (window.isOpen())
     {
-        
         Event event;
         while (window.pollEvent(event))
         {
@@ -539,39 +487,28 @@ int main()
             {
                 _Gun.updateTrunkRotation(Vector2f(event.mouseMove.x, event.mouseMove.y));
             }
-
             if (event.type == Event::MouseButtonPressed && event.mouseButton.button == Mouse::Right)
             {
-                _Gun.CreateLaser();
-                _Gun.SetIsActiveLaser(true);
-                _Gun.Duration();
-                 _List.Intersection(_Gun);
-                 _Score.ScoreChage();
+                _Gun.createLaser();
+                _Gun.setIsActiveLaser(true);
+                _Gun.duration();
+                _List.intersection(_Gun);
+                _Score.scoreChage();
             }
-
         }
-
         Time time2 = clock.getElapsedTime();
         int diff = time2.asMilliseconds() - time.asMilliseconds();
         time = time2;
 
-
         _Gun.updateLaser(diff);
-        _Score.UpdateColor(diff);
-        //cout << _Gun.GetPosLaserEnd() << endl;
-        //cout << _Gun.Lenght() << endl;
-       
+        _Score.updateColor(diff);
+
         if (_List.isListEmpty())
         {
-            _List.CreateObjects();
-            _List.SpawnObject();
-           
+            _List.createObjects();
+            _List.spawnObject();
         }
-        
-        _List.MoveObjects();
-           
-        
-        
+        _List.moveObjects();
 
         window.clear();
         _Score.drawScore(window);
@@ -581,9 +518,8 @@ int main()
         window.display();
 
     }
-    _Score.SaveRecord();
-   
+    _Score.saveRecord();
     return 0;
 }
-    
+
 
